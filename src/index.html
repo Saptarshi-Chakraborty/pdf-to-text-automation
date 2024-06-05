@@ -115,6 +115,8 @@
 
                 if (response.status === "success") {
                     setMessage("File uploaded successfully.", "green");
+                    form.reset();
+                    
                 } else {
                     setMessage(response.message, "red");
                 }
