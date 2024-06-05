@@ -1,2 +1,7 @@
 # node modules folder
-node_modules
+/node_modules/
+
+.env
+
+# upload folder
+/uploads/
