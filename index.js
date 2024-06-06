@@ -7,6 +7,7 @@ import fileUpload from 'express-fileupload';
 import uploadToGithub from './lib/uploadToGithub.js';
 import { ID } from 'node-appwrite';
 import { database } from './lib/appwrite.js';
+import analyzePdf from './workers/analyzePdf.js';
 
 
 dotenv.config(); // initialize .env
@@ -83,6 +84,8 @@ app.post("/file-upload",
         res.status(200).json({ status: "success", message: "File uploaded successfully" })
     }
 )
+
+app.get("/analyze-pdf", analyzePdf);
 
 
 
