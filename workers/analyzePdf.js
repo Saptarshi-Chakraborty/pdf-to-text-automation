@@ -83,20 +83,12 @@ async function analyzePdf(req, res, next) {
 
     try {
         // convert pdf pages to images
-        const pageConvertResult = await pdfToImage(pdfPath, startingPage, endingPage);
+        const pageConvertResult = await pdfToImage(pdfPath, pdfData.$id, startingPage, endingPage);
+
         if (pageConvertResult === false) {
             throw new Error("Error converting pdf to image - pdfToImage function returned false");
         }
-
-        const [result1, result2] = await Promise.all([
-            uploadPageImage(pdfData.filename, startingPage, pageConvertResult[0], pdfData.$id),
-            uploadPageImage(pdfData.filename, startingPage + 1, pageConvertResult[1], pdfData.$id),
-        ]);
-
-        if (result1 === false || result2 === false) {
-            throw new Error("Error uploading image to Github");
-        }
-
+ 
         // update the pdf data in the database
         const updateResult = await database.updateDocument(
             databaseId,

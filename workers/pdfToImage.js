@@ -1,9 +1,10 @@
 import { pdf } from "pdf-to-img";
-import fs from "fs/promises";
 import path from "path";
+import uploadPageImage from "../lib/uploadPageImage.js";
 
-async function pdfToImage(pdfFilePath, start = null, end = null) {
-    const filename = path.basename(pdfFilePath, path.extname(pdfFilePath));
+async function pdfToImage(pdfFilePath, pdfFileId, start = null, end = null) {
+
+    const pdfFileName = path.basename(pdfFilePath);
     let counter = 1;
     let fileNames = [];
 
@@ -20,10 +21,8 @@ async function pdfToImage(pdfFilePath, start = null, end = null) {
                     continue;
                 }
 
-                const imageFileName = `./images/${filename}_page_${counter}.jpg`;
-
-                await fs.writeFile(imageFileName, image);
-                fileNames.push(imageFileName);
+                const uploadResult = await uploadPageImage(counter, image, "image.jpg", pdfFileId);
+                console.log(`upload result: ${uploadResult} - page:`, counter);
 
                 counter++;
             }
@@ -36,25 +35,15 @@ async function pdfToImage(pdfFilePath, start = null, end = null) {
         const document = await pdf(pdfFilePath, { combinedImage: false, combinedImageType: "jpg", combinedImageOutputPath: "./images" });
 
         for await (const image of document) {
-            const imageFileName = `./images/${filename}_page_${counter}.jpg`;
-            await fs.writeFile(imageFileName, image);
-            fileNames.push(imageFileName);
+
+            const uploadResult = await uploadPageImage(counter, image, "image.jpg", pdfFileId);
+            console.log(`upload result: ${uploadResult} - page:`, counter);
+
             counter++;
         }
 
         console.log("PDF converted to image successfully");
         return fileNames;
-
-
-
-
-        // const document = await pdf(pdfFilePath, { combinedImage: false, combinedImageType: "png", combinedImageOutputPath: "./images" });
-        // for await (const image of document) {
-        //     await fs.writeFile(`./images/${filename}_page_${counter}.png`, image);
-        //     counter++;
-        // }
-
-
 
     } catch (err) {
         console.log(err);
